@@ -89,6 +89,7 @@ public class Channel{
                 case .ping(_): break
                 case .viabilityChanged(_): break
                 case .reconnectSuggested(_): break
+                case .peerClosed: break
                 }
             }
         }catch PieSocketException.PausedForFetchingJwt{
