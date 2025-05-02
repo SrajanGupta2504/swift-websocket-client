@@ -74,25 +74,21 @@ public class Channel{
             ws?.connect()
             ws?.onEvent = { event in
                 switch event {
-                    case .connected(_):
-                        self.onOpen()
-                    case .disconnected(let reason, let code):
-                        self.onClosing()
-                    case .text(let text):
-                        self.onMessage(text: text)
-                    case .cancelled:
-                        self.onClosing()
-                    case .error(let error):
-                        self.onError(error: error!)
-                    case .binary(_): break
-                    case .pong(_): break
-                    case .ping(_): break
-                    case .viabilityChanged(_): break
-                    case .reconnectSuggested(_): break
-                    @unknown default:
-                    break
-
-
+                case .connected(_):
+                    self.onOpen()
+                case .disconnected(let reason, let code):
+                    self.onClosing()
+                case .text(let text):
+                    self.onMessage(text: text)
+                case .cancelled:
+                    self.onClosing()
+                case .error(let error):
+                    self.onError(error: error!)
+                case .binary(_): break
+                case .pong(_): break
+                case .ping(_): break
+                case .viabilityChanged(_): break
+                case .reconnectSuggested(_): break
                 }
             }
         }catch PieSocketException.PausedForFetchingJwt{
