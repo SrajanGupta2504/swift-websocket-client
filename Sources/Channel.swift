@@ -329,7 +329,7 @@ public class Channel{
         
         if let data: Data = mainText.data(using: .utf8) {
            do {
-               let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String:AnyObject]
+               let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:AnyObject]
                return json
            } catch {
                return nil
