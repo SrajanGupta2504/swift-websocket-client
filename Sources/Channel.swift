@@ -318,18 +318,9 @@ public class Channel{
     
     
     private func convertStringToDictionary(text: String) -> [String:AnyObject]? {
-        var mainText = ""
-        if text.contains("\\") {
-            mainText = text
-                // You can clean or handle it if needed
-        } else {
-            mainText = "\"\(text)\""
-        }
-                         
-        
-        if let data: Data = mainText.data(using: .utf8) {
+        if let data: Data = text.data(using: .utf8) {
            do {
-               let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:AnyObject]
+               let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String:AnyObject]
                return json
            } catch {
                return nil
