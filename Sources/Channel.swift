@@ -338,45 +338,48 @@ public class Channel{
         }
     }
     
-     public func onMessage(text: String){
-        
-        var payload: PieSocketEvent = PieSocketEvent();
-        
-        if (self.listeners.keys.contains("system:message")) {
-            payload.setEvent(event: "system:message");
-            payload.setData(data: text);
+    public func onMessage(text: String) {
+        var payload = PieSocketEvent()
 
-            doFireEvents(listnerKey: "system:message", event: payload);
+        // Always fire plain "system:message" if listener exists
+        if self.listeners.keys.contains("system:message") {
+            payload.setEvent(event: "system:message")
+            payload.setData(data: text)
+            doFireEvents(listnerKey: "system:message", event: payload)
         }
 
-        
-        //Fire json events
-        let jsonObject = convertStringToDictionary(text: text)
-        
-        if(jsonObject != nil){
+        // Try to parse as JSON
+        if let jsonObject = convertStringToDictionary(text: text) {
             
-            if(jsonObject?.keys.contains("event") ?? false ){
-                payload.setEvent(event: jsonObject?["event"] as! String)
-                payload.setData(data: dictToString(dict: jsonObject?["data"]));
-                payload.setMeta(meta: dictToString(dict: jsonObject?["meta"]))
+            if let event = jsonObject["event"] as? String {
+                payload.setEvent(event: event)
+                payload.setData(data: dictToString(dict: jsonObject["data"]))
+                payload.setMeta(meta: dictToString(dict: jsonObject["meta"]))
 
-                //Trigger listener(s
                 handleSystemEvents(event: payload)
                 fireEvent(event: payload)
+                return
             }
             
-            if(jsonObject?.keys.contains("error") ?? false ){
+            if let error = jsonObject["error"] {
                 self.shouldReconnect = false
-                
                 payload.setEvent(event: "system:error")
-                payload.setData(data: dictToString(dict: jsonObject?["error"]))
+                payload.setData(data: dictToString(dict: error))
                 fireEvent(event: payload)
+                return
             }
-            
-            
+
+        } else {
+            // ❗ Handle non-JSON text by wrapping it in a default JSON structure
+            var fallbackPayload = PieSocketEvent()
+            fallbackPayload.setEvent(event: "message")
+            fallbackPayload.setData(data: text)
+            fallbackPayload.setMeta(meta: "{}")  // optional: can be "{}" or include timestamp etc.
+
+            fireEvent(event: fallbackPayload)
         }
-        
     }
+
     
     private func handleSystemEvents(event: PieSocketEvent){
         if(
