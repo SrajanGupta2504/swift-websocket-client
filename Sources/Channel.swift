@@ -311,7 +311,7 @@ public class Channel{
         self.reconnect()
     }
     
-     func onError(error: any Error){
+    public func onError(error: any Error){
         let event: PieSocketEvent = PieSocketEvent(event: "system:error");
         self.fireEvent(event: event);
     }
@@ -338,7 +338,7 @@ public class Channel{
         }
     }
     
-     func onMessage(text: String){
+     public func onMessage(text: String){
         
         var payload: PieSocketEvent = PieSocketEvent();
         
